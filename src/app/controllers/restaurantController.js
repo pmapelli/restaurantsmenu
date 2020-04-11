@@ -10,13 +10,21 @@ module.exports = {
   },
   async create(request, response) {
     try {
-      const { name, email, whatsapp, password, city, uf } = request.body;
+      const {
+        name,
+        email,
+        whatsapp,
+        address,
+        city,
+        uf,
+        password,
+      } = request.body;
 
       const id = generateUniqueId();
 
-      bcrypt.hash(password, 8, async (err, result) => {
+      bcrypt.hash(password, 8, async (err, password) => {
         if (err) {
-          res.json({ error: "Server Error" });
+          response.json({ error: "Server Error" });
         }
         await connection("restaurants").insert({
           id,
@@ -24,6 +32,7 @@ module.exports = {
           email,
           password,
           whatsapp,
+          address,
           city,
           uf,
         });
@@ -31,7 +40,7 @@ module.exports = {
 
       return response.json(id);
     } catch (err) {
-      return res.status(400).send({ ßerror: "Registration failed" });
+      return response.status(400).send({ error: "Registration failed" });
     }
   },
 };
