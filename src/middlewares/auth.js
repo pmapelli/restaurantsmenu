@@ -7,9 +7,11 @@ module.exports = {
     if (!token) {
       return res.status(401).json({ error: "no token provided" });
     }
+
     try {
       const decoded = await jwt.verify(token, process.env.SECRET);
-      req.ong = decoded.id;
+
+      req.restaurant_id = decoded.id;
       next();
     } catch (error) {
       return res.status(401).json({ error: "Falha de autenticação" });

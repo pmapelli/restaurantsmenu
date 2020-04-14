@@ -1,8 +1,10 @@
 const express = require("express"); // importando framework
-const session = require("express-session");
 const cors = require("cors"); // ./referencia na mesma pasta
 const routes = require("./routes"); // ./referencia na mesma pasta
 const { errors } = require("celebrate");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const app = express();
 

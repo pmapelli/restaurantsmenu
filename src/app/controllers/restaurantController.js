@@ -8,6 +8,7 @@ module.exports = {
 
     return response.json(restaurants);
   },
+
   async create(request, response) {
     try {
       const {
@@ -19,6 +20,15 @@ module.exports = {
         uf,
         password,
       } = request.body;
+
+      const restaurant = await connection("restaurants")
+        .where("email", email)
+        .select("*")
+        .first();
+
+      if (restaurant) {
+        return response.status(400).send({ error: "Email already exists" });
+      }
 
       const id = generateUniqueId();
 

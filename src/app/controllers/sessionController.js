@@ -7,7 +7,7 @@ module.exports = {
     const { email, password } = request.body;
     const restaurant = await connection("restaurants")
       .where("email", email)
-      .select("id", "name", "password")
+      .select("*")
       .first();
 
     if (!restaurant) {
@@ -15,25 +15,25 @@ module.exports = {
         .status(400)
         .json({ error: "No restaurant found with this Login" });
     } else {
-      bcrypt.compare(password, restaurant.password, (err, data) => {
-        if (!err) {
-          jwt.sign(
-            {
-              name: restaurant.name,
-              id: restaurant.id,
-            },
-            process.env.SECRET,
-            { expiresIn: "1d" },
-            (err, token) => {
-              if (!err) {
-                return res.json({
-                  name: restaurant.name,
-                  token,
-                });
-              }
-            }
-          );
-        }
+      if (!bcrypt.compare(password, restaurant.password)) {
+        return res.status(401).json({ error: "Password does not match" });
+      }
+
+      const { id, name, email } = restaurant;
+
+      return response.json({
+        user: {
+          id,
+          name,
+          email,
+        },
+        token: jwt.sign(
+          { name: restaurant.name, id: restaurant.id },
+          process.env.SECRET,
+          {
+            expiresIn: process.env.EXPIRESIN,
+          }
+        ),
       });
     }
   },
